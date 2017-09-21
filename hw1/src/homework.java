@@ -35,11 +35,11 @@ public class homework
 	// inner class status
 	static class status
 	{
-		public int[][] board;
+		public int[] points;
 		public int p;
-		public status(int[][] board_now, int step)
+		public status(int[] points_now, int step)
 		{
-			board = board_now;
+			points = points_now;
 			p = step;
 		}
 	}
@@ -183,14 +183,28 @@ public class homework
 		}
 	}
 	
+	private static long dfs_count = 0;
 	//dfs
 	private static boolean dfs(int[][] board, List<interval> intervals, int start, int p)
 	{
+		
 		if(p == 0) 
 		{
 			sol = recoverNursey(board);
-			return true;
+			return true;	
 		}
+		if(dfs_count%10000000 == 0)
+		{
+			//System.out.println(dfs_count);
+			long endTime = System.currentTimeMillis();
+			if(endTime - startTime > 240000)
+			{
+				return false;
+			}
+		}
+		
+		dfs_count ++;
+		
 		if(start == intervals.size() ) return false;
 		if( p > intervals.size() - start ) return false;
 		interval itv = intervals.get(start);		
@@ -216,6 +230,7 @@ public class homework
 	{
 		
 		//printBoard(nursey);
+		startTime = System.currentTimeMillis();
 		int[][] board = modifyNursey(nursey);
 		//printBoard(board);
 		List<interval> intervals = calInterval(board);
@@ -268,6 +283,39 @@ public class homework
 	}
 	
 	
+	
+	private static boolean isValid(int[][] board, int row, int col)
+	{
+		int i = row;
+		int j = col;
+		while(board[--i][--j] != 2)
+		{
+			if(board[i][j] == 1)
+			{
+				return false;
+			}
+		}
+		i = row;
+		j = col;
+		while(board[--i][j] != 2)
+		{
+			if(board[i][j] == 1)
+			{
+				return false;
+			}
+		}
+		i = row;
+		j = col;
+		while(board[--i][++j] != 2)
+		{
+			if(board[i][j] == 1)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	// bfs implement
 	private static boolean bfs(int[][] board, List<interval>intervals, int p)
 	{
@@ -275,7 +323,10 @@ public class homework
 		//int n = board.length;
 		List<status> list = new ArrayList<status>();
 		List<status> new_list = new ArrayList<status>();
-		status root = new status(board, p);
+		int n = board.length;
+		int[] point = new int[0];
+		// undo compress
+		status root = new status(point, p);
 		list.add(root);
 		int count = 0;
 		for(int i = 0; i < intervals.size(); i++)
@@ -288,8 +339,9 @@ public class homework
 			//System.out.println(list.size());
 			for(status s:list)
 			{
-				count++;
-				if(count % 10000 == 0)
+			
+				
+				if(count % 100000 == 0)
 				{
 					//System.out.println(count);
 					long endTime = System.currentTimeMillis();
@@ -298,33 +350,74 @@ public class homework
 						return false;
 					}
 				}
-				int[][] brd = s.board;
+				count++;
+				
+				int[] pts = s.points;
+				int[][] brd = new int[n][n];
+				for(int ni = 0; ni < n; ni++)
+				{
+					for(int nj = 0; nj < n; nj++)
+					{
+						brd[ni][nj] = board[ni][nj];
+					}
+				}
+				for(int k = 0; k < pts.length; k++)
+				{
+					int fone = pts[k];
+					brd[fone/n][fone%n] = 1;
+				}
+				
+//				if(count % 100000 == 0)
+//				{
+//					printBoard(brd);
+//				}
+				//
+				
 				int step = s.p;
 				if(step > intervals.size() - i)
 				{
 					continue;
 				}
 				if(step < intervals.size() - i)
-					new_list.add(new status(brd, step));
+					new_list.add(new status(pts, step));
 				for(int j = itv.start; j <= itv.end; j++ )
 				{
-					
-					
-					if(brd[itv.row][j] < 0) continue;
-					else
+					//brd[itv.row][j] = 1;
+					if(!isValid(brd,itv.row,j))
 					{
-						if(step == 1)
-						{
-							brd[itv.row][j] = 1;
-							sol = recoverNursey(brd);
-							return true;
-						}
-						int[][] brd2 = sign_return(brd, itv.row, j);
-						status node = new status(brd2, step-1);
-						new_list.add(node);
+						//brd[itv.row][j] = 0;
+						continue;
 					}
 					
+					if(step == 1)
+					{
+						
+						brd[itv.row][j] = 1;
+						sol = recoverNursey(brd);
+						return true;
+					}
+					
+					
+					//printBoard(brd);
+					//brd[itv.row][j] = 0;
+					
+					//System.out.println("pp   "+ (itv.row * n + j));
+					
+//						int[][] brd2 = sign_return(brd, itv.row, j);
+//						status node = new status(brd2, step-1);
+					int[] pp = new int[pts.length+1];
+					for(int pi = 0; pi < pts.length; pi++)
+					{
+						pp[pi] = pts[pi];
+					}
+					pp[pts.length] = itv.row * n + j;
+					status node = new status(pp,step-1);
+					
+					new_list.add(node);
+					
+					
 				}
+				brd = null;
 				s = null;
 				
 			}
@@ -344,6 +437,7 @@ public class homework
 		
 		if(bfs(board, intervals, p))
 		{
+			//System.out.println("Conflict:"+calConflict(sol));
 			return true;
 		}
 		return false;
@@ -442,7 +536,7 @@ public class homework
 			else
 			{
 				int count = 0;
-				for(int j = sum - n + 1; j < n-1; j++)
+				for(int j = sum - n + 2; j < n-1; j++)
 				{
 					int i = sum - j;
 					if(board[i][j] == 1)
@@ -556,6 +650,7 @@ public class homework
 		else
 		{
 			double E = (double)new_conflict - old_conflict ;
+			//System.out.println(Math.exp((-1)*E/T));
 			if( rdm.nextDouble() < Math.exp((-1)*E/T))
 			{
 				//System.out.println("accept");
@@ -591,29 +686,53 @@ public class homework
 		startTime = System.currentTimeMillis();
 		
 		int step = 0;
-		double T = 1;
+		double T = p;
 		//printBoard(board);
 		
 		while(true)
 		{
-			long endTime = System.currentTimeMillis();
-			if(endTime - startTime > 240000)
+
+			if(step%100000 == 0)
 			{
-				return false;
+				
+				//System.out.println("Step  "+ step);
+				//System.out.println("Conflict  "+calConflict(board));
+				//System.out.println("T  "+T);
+				long endTime = System.currentTimeMillis();
+				if(endTime - startTime > 240000)
+				{
+					return false;
+				}
+				//printBoard(board);
+				
 			}
+			step ++;
+			
+			
 			if(calConflict(board) == 0) 
 			{
 				sol = recoverNursey(board);
 				return true;
 			}
-			step ++;
-			T = T*0.99;
-			//System.out.println("Step  "+ step);
+
+			if(step < 100)
+			{
+				T = T*0.999;
+			}
+			else if(step < 1000)
+			{
+				T = T*0.9999;
+			}
+			else
+			{
+				T = T*0.99999;
+			}
+			
 			if(step > Integer.MAX_VALUE) break;
 			
 			board = oneStep(board,T);
-			//printBoard(board);
-			//System.out.println(calConflict(board));
+			
+			
 			
 		}
 		return false;
