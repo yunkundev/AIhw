@@ -2,12 +2,17 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="System" key="selection"/>
+		<item value="print" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="print"/>
+			<item value="Sys"/>
+			<item value="//System.out.println(sb.toString());&#x0A;&#x09;&#x09;File file_output = new File(&quot;output.txt&quot;);&#x0A;&#x09;&#x09;&#x0A;&#x09;&#x09;try&#x0A;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;FileWriter fw = new FileWriter(file_output);&#x0A;&#x09;&#x09;&#x09;BufferedWriter bw = new BufferedWriter(fw);&#x0A;&#x09;&#x09;&#x09;bw.write(sb.toString());&#x0A;&#x09;&#x09;&#x09;bw.flush();&#x0A;&#x09;&#x09;&#x09;bw.close();&#x0A;&#x09;&#x09;&#x09;&#x0A;&#x09;&#x09;}catch(IOException e)&#x0A;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;e.printStackTrace();&#x0A;&#x09;&#x09;}"/>
+			<item value="240000"/>
+			<item value="200000"/>
 			<item value="System"/>
 		</list>
 		<list key="replacehistory">
