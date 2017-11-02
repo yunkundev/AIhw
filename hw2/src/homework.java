@@ -399,7 +399,6 @@ public class homework
 			sb.append("\r\n");
 		}
 		
-		//System.out.println(sb.toString());
 		File file_output = new File("output.txt");
 		
 		try
