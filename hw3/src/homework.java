@@ -181,10 +181,10 @@ public class homework
 			return false;
 		}
 		
-		System.out.println("Contradict!");
-		System.out.println(rule1);
-		System.out.println(rule2);
-		System.out.println("__________");
+//		System.out.println("Contradict!");
+//		System.out.println(rule1);
+//		System.out.println(rule2);
+//		System.out.println("__________");
 		return true;
 	}
 	
@@ -314,12 +314,12 @@ public class homework
 
 	public static boolean inferContradiction(List<rule> KBQ)
 	{
-		System.out.println("KB");
-		for(int i = 0; i < KBQ.size(); i++)
-		{
-			System.out.println(KBQ.get(i));
-		}
-		System.out.println("_________start_infer_________");
+//		System.out.println("KB");
+//		for(int i = 0; i < KBQ.size(); i++)
+//		{
+//			System.out.println(KBQ.get(i));
+//		}
+//		System.out.println("_________start_infer_________");
 		HashMap<String, Integer> rule_map = new HashMap<String, Integer>();
 		for(rule r:KBQ) 
 		{
@@ -334,30 +334,32 @@ public class homework
 				rule new_rule = infer(KBQ.get(i), KBQ.get(j));
 				if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 				{
-					System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ KBQ.get(j).toString() +"---->");
-					System.out.println(new_rule.toString());
+					//System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ KBQ.get(j).toString() +"---->");
+					//System.out.println(new_rule.toString());
 					rule_map.put(new_rule.toString(), 1);
 					buff.add(new_rule);
 				}
 			}
 		}
-		
+		long start_time = System.currentTimeMillis();
 		int count = 1;
 		while(buff.size() > 0)
 		{
-			System.out.println(count++);
+			//System.out.println(count++);
 			//for(rule r:buff) System.out.println(r);
 			List<rule> tmp = new ArrayList<rule>();
 			for(int i = 0; i < buff.size(); i++)
 			{
 				for(int j = 0; j < buff.size(); j++)
 				{
+					long end_time = System.currentTimeMillis();
+					if(end_time - start_time > 60000) return false;
 					if(isContradict(buff.get(i), buff.get(j))) return true;
 					rule new_rule = infer(buff.get(i), buff.get(j));
 					if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 					{
-						System.out.println(">>>   "+buff.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
-						System.out.println(new_rule.toString());
+						//System.out.println(">>>   "+buff.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
+						//System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
 						tmp.add(new_rule);
 					}
@@ -371,8 +373,8 @@ public class homework
 					rule new_rule = infer(KBQ.get(i), buff.get(j));
 					if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 					{
-						System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
-						System.out.println(new_rule.toString());
+						//System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
+						//System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
 						tmp.add(new_rule);
 					}
@@ -484,9 +486,9 @@ public class homework
 			else sb.append("FALSE");
 			if(i != res.length-1) sb.append("\r\n");
 		}
-		System.out.println();
-		System.out.println("Result:");
-		System.out.println(sb.toString());
+//		System.out.println();
+//		System.out.println("Result:");
+//		System.out.println(sb.toString());
 		try
 		{
 			File file_out = new File("output.txt");
