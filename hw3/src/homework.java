@@ -10,6 +10,7 @@ import java.util.List;
 
 public class homework 
 {
+	public static int count = 1;
 	static class predicate
 	{
 		String name;
@@ -59,7 +60,37 @@ public class homework
 				}
 			}
 		}
+		predicate(String s, int num)
+		{
+			name = s.split("\\(")[0]; 
+			if(name.charAt(0) == '~') 
+			{
+				neg = true;
+				name = name.substring(1);
+			}
+			
+			String arguments = s.split("\\(")[1];
+			arguments = arguments.substring(0, arguments.length()-1);
 
+			argument = arguments.split(",");
+			isConstant = new boolean[argument.length];
+			for(int i = 0; i < argument.length; i++)
+			{
+				//System.out.println(argument[i]);
+				if(argument[i].charAt(0) >= 'A' && argument[i].charAt(0) <= 'Z')
+				{
+					isConstant[i] = true;
+				}
+				else
+				{
+					argument[i] += String.valueOf(num);
+				}
+			}
+		}
+		
+		
+		
+		
 	}
 	
 	static class rule
@@ -76,19 +107,20 @@ public class homework
 			}
 			size = list.size();
 		}
+		
 		public rule()
 		{
 			predicates = new ArrayList<predicate>();
 			size = 0;
 		}
-		public rule(String str)
+		public rule(String str, int num)
 		{
 			String[] ps = str.split("\\|");
 			predicates = new ArrayList<predicate>();
 			for(int i = 0; i < ps.length; i++)
 			{
 				//System.out.println(ps[i].trim());
-				predicate p = new predicate(ps[i].trim());
+				predicate p = new predicate(ps[i].trim(), num);
 				predicates.add(p);
 			}
 			size = ps.length;
@@ -156,7 +188,7 @@ public class homework
 		return true;
 	}
 	
-	public static void replaceAll(List<predicate>list, String var, String cst)
+	public static void replaceAll(List<predicate>list, String var, String cst, boolean isvar)
 	{
 		for(int i = 0; i < list.size(); i++)
 		{
@@ -166,7 +198,7 @@ public class homework
 				if(p.argument[j].equals(var))
 				{
 					p.argument[j] = cst;
-					p.isConstant[j] = true;
+					if(!isvar)	p.isConstant[j] = true;
 				}
 			}
 		}
@@ -188,13 +220,13 @@ public class homework
 						{
 							String var = p2.argument[k];
 							String cst = p1.argument[k];
-							replaceAll(list2, var, cst);
+							replaceAll(list2, var, cst, false);
 						}
 						if(!p1.isConstant[k] && p2.isConstant[k])
 						{
 							String var = p1.argument[k];
 							String cst = p2.argument[k];
-							replaceAll(list1, var, cst);
+							replaceAll(list1, var, cst, false);
 						}
 					}
 				}
@@ -202,6 +234,21 @@ public class homework
 		}
 	}
 	
+	public static void normalize(predicate p1, predicate p2, List<predicate> list2)
+	{
+		for(int k = 0; k < p1.argument.length ; k++)
+		{
+			if(!p1.isConstant[k] && !p2.isConstant[k])
+			{
+				//p2.argument[k] -> p1.argument[k]
+				String var1 = p1.argument[k];
+				String var2 = p2.argument[k];
+				replaceAll(list2, var2, var1, true);
+			}
+		}
+				
+
+	}
 	
 	public static rule infer(rule rule1, rule rule2)
 	{
@@ -227,6 +274,9 @@ public class homework
 			{
 				if(isOpposite(list1.get(i), list2.get(j)))
 				{
+					predicate p1 = list1.get(i);
+					predicate p2 = list2.get(j);
+					normalize(p1, p2, list2);
 					list1.remove(i);
 					list2.remove(j);
 					i--;
@@ -375,12 +425,12 @@ public class homework
 		for(int i = 0; i < sentences.length; i++)
 		{
 			//System.out.println(sentences[i]);
-			rule sentence = new rule(sentences[i]);
+			rule sentence = new rule(sentences[i], count++);
 			KB.add(sentence);
 		}
 		for(int i = 0; i < queries.length; i++)
 		{
-			rule query = new rule(queries[i]);
+			rule query = new rule(queries[i], count++);
 			res[i] = resolution(query, KB);
 		}
 		
