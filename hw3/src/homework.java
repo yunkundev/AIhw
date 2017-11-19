@@ -336,9 +336,11 @@ public class homework
 //		}
 //		System.out.println("_________start_infer_________");
 		HashMap<String, Integer> rule_map = new HashMap<String, Integer>();
+		int max_len = 0;
 		for(rule r:KBQ) 
 		{
 			rule_map.put(r.toString(), 1);
+			max_len = Math.max(max_len, r.size);
 		}
 		List<rule> buff = new ArrayList<rule>();
 		for(int i = 0; i < KBQ.size(); i++)
@@ -352,12 +354,12 @@ public class homework
 //					System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ KBQ.get(j).toString() +"---->");
 //					System.out.println(new_rule.toString());
 					rule_map.put(new_rule.toString(), 1);
-					buff.add(new_rule);
+					if(new_rule.size <= max_len)	buff.add(new_rule);
 				}
 			}
 		}
 		long start_time = System.currentTimeMillis();
-		int count = 1;
+		//int count = 1;
 		while(buff.size() > 0)
 		{
 			//System.out.println(count++);
@@ -367,7 +369,7 @@ public class homework
 				for(int j = 0; j < buff.size(); j++)
 				{
 					long end_time = System.currentTimeMillis();
-					if(end_time - start_time > 60000) return false;
+					if(end_time - start_time > 600000) return false;
 					if(isContradict(buff.get(i), buff.get(j))) return true;
 					rule new_rule = infer(buff.get(i), buff.get(j));
 					if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
@@ -375,7 +377,7 @@ public class homework
 //						System.out.println(">>>   "+buff.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
 //						System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
-						tmp.add(new_rule);
+						if(new_rule.size <= max_len) tmp.add(new_rule);
 					}
 				}
 			}
@@ -390,7 +392,7 @@ public class homework
 //						System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
 //						System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
-						tmp.add(new_rule);
+						if(new_rule.size <= max_len) tmp.add(new_rule);
 					}
 				}
 			}
