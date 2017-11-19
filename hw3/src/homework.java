@@ -176,11 +176,26 @@ public class homework
 		if(rule1.size != 1) return false;
 		if(rule2.size != 1) return false;
 		
-		if(!isOpposite(rule1.predicates.get(0), rule2.predicates.get(0)))
+		List<predicate> list1 = new ArrayList<predicate>();
+		List<predicate> list2 = new ArrayList<predicate>();
+		for(predicate p:rule1.predicates)	
+		{
+			predicate np = new predicate(p.toString());
+			list1.add(np);
+		}
+		for(predicate p:rule2.predicates)
+		{
+			predicate np = new predicate(p.toString());
+			list2.add(np);
+		}
+		
+		unify(list1, list2);
+		
+		if(!isOpposite(list1.get(0), list2.get(0)))
 		{
 			return false;
 		}
-		
+//		System.out.println();
 //		System.out.println("Contradict!");
 //		System.out.println(rule1);
 //		System.out.println(rule2);
@@ -334,8 +349,8 @@ public class homework
 				rule new_rule = infer(KBQ.get(i), KBQ.get(j));
 				if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 				{
-					//System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ KBQ.get(j).toString() +"---->");
-					//System.out.println(new_rule.toString());
+//					System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ KBQ.get(j).toString() +"---->");
+//					System.out.println(new_rule.toString());
 					rule_map.put(new_rule.toString(), 1);
 					buff.add(new_rule);
 				}
@@ -346,7 +361,6 @@ public class homework
 		while(buff.size() > 0)
 		{
 			//System.out.println(count++);
-			//for(rule r:buff) System.out.println(r);
 			List<rule> tmp = new ArrayList<rule>();
 			for(int i = 0; i < buff.size(); i++)
 			{
@@ -358,8 +372,8 @@ public class homework
 					rule new_rule = infer(buff.get(i), buff.get(j));
 					if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 					{
-						//System.out.println(">>>   "+buff.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
-						//System.out.println(new_rule.toString());
+//						System.out.println(">>>   "+buff.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
+//						System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
 						tmp.add(new_rule);
 					}
@@ -373,8 +387,8 @@ public class homework
 					rule new_rule = infer(KBQ.get(i), buff.get(j));
 					if(new_rule.size > 0 && !rule_map.containsKey(new_rule.toString())) 
 					{
-						//System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
-						//System.out.println(new_rule.toString());
+//						System.out.println(">>>   "+KBQ.get(i).toString() + "  +  "+ buff.get(j).toString() +"---->");
+//						System.out.println(new_rule.toString());
 						rule_map.put(new_rule.toString(), 1);
 						tmp.add(new_rule);
 					}
